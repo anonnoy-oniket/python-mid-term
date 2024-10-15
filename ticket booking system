@@ -1,0 +1,91 @@
+from datetime import date
+
+class Star_cinema:
+    hall_list = []
+    def entry_hall(self, obj):
+        Star_cinema.hall_list.append(obj)
+
+class Hall(Star_cinema):
+    def __init__(self, rows, cols, hall_no,) -> None:
+        self.__seats = {}
+        self.__show_list = []
+        self.rows = rows
+        self.cols = cols
+        self.__hall_no = hall_no
+
+        self.entry_hall(self)
+
+    def valid_ID(self, id):
+        for key in self.__seats.keys():
+            if id == key:
+                return True
+        return False
+
+    def entry_show(self, id, movie_name, time):
+        self.__show_list.append((id, movie_name, time))
+
+        seat_plan = [[0 for _ in range(self.rows)] for _ in range(self.cols)]
+        self.__seats[id] = seat_plan
+
+    def book_seats(self, id, row, col):
+        if not self.valid_ID(id):
+            print("Invalid Show ID")
+            return
+        seat_plan = self.__seats[id]
+        if row < 0 or col < 0 or row > self.rows or col > self.cols:
+            print("Invalid Seat Positions")
+        elif seat_plan[row][col] == 0:
+            seat_plan[row][col] = 1
+        else:
+            print("Seat already booked :\"(")
+    
+    def view_show_list(self):
+        for show in self.__show_list:
+            print(f"Movie Name: {show[1]}, Show ID: {show[0]}, Time: {show[2]}")
+
+    def view_available_seats(self, id):
+        if not self.valid_ID(id):
+            print("Invalid Show ID")
+            return
+        seat_plan = self.__seats[id]
+        for i in seat_plan:
+            print(i)
+
+
+hall1 = Hall(7, 8, "Hall-1")
+
+today = date.today()
+hall1.entry_show("111", "Inception", f"{today} 18:00 PM")
+hall1.entry_show("333", "Interstellar", f"{today} 21:00PM")
+
+options = """Press the corresponding option:
+1. VIEW ALL SHOW TODAY
+2. VIEW AVAILABLE SEATS
+3. BOOK TICKET
+4. Exit    
+"""
+while(True):
+    print(options)
+    op = int(input("Enter Option: "))
+
+    if op == 1:
+        hall1.view_show_list()
+    elif op == 2:
+        id = input("Enter the show ID: ")
+        hall1.view_available_seats(id)
+    elif op == 3:
+        id = input("Enter the show ID: ")
+        if not hall1.valid_ID(id):
+            print("Invalid Show ID")
+            continue
+        num = int(input("Number of Ticket: "))
+        while(num != 0):
+            num -= 1
+            row = int(input("Enter Seat Row: ")) - 1
+            col = int(input("Enter Seat Column: ")) - 1
+            hall1.book_seats(id, row, col)
+    elif op == 4:
+        print("Process Terminated")
+        break
+    else:
+        print("Invalid Instruction")
